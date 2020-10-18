@@ -73,13 +73,13 @@ function CategoryMealsScreen(props) {
                                       </ImageBackground>
                                   </View>
                                   <View style={styles.bottomText}>
-                                      <Text>
+                                      <Text style={{fontFamily:'open-sans'}}>
                                           {itemData.item.duration}m
                                       </Text>
-                                      <Text>
+                                      <Text style={{fontFamily:'open-sans'}}>
                                           {itemData.item.complexity.toUpperCase()}
                                       </Text>
-                                      <Text>
+                                      <Text style={{fontFamily:'open-sans'}}>
                                           {itemData.item.affordability.toUpperCase()}
                                       </Text>
                                   </View>

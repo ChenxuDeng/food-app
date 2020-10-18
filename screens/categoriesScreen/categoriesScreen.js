@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity,Platform,TouchableNativeFeedback} from "react-native";
 import {CATEGORIES} from "../../data/dummyData";
+import {HeaderButtons,Item} from "react-navigation-header-buttons";
+import headerButton from "../../components/headerButton/headerButton";
 
 function CategoriesScreen(props) {
     const styles=StyleSheet.create({
@@ -37,6 +39,7 @@ function CategoriesScreen(props) {
                       renderItem={(itemData)=>{
                           return <View style={styles.listContainer}>
                               <CustomTouchable onPress={()=>{props.navigation.navigate({routeName:'CategoriesMeal',params:{categoryId:itemData.item.id}})}}
+                                               style={{height:150}}
                               >
                                   <View style={[{backgroundColor:itemData.item.color},styles.itemContainer]}>
                                       <Text numberOfLines={2} style={{fontFamily:'open-sans-bold',fontSize:22,textAlign:'right'}}>
@@ -48,6 +51,14 @@ function CategoriesScreen(props) {
                       }}
             />
     );
+}
+
+CategoriesScreen.navigationOptions=(navigationData)=>{
+    return {
+        headerLeft:()=><HeaderButtons HeaderButtonComponent={headerButton}>
+            <Item title={'menu'} iconName={'ios-menu'} iconSize={23} onPress={()=>{navigationData.navigation.toggleDrawer()}}/>
+        </HeaderButtons>
+    }
 }
 
 export default CategoriesScreen;
