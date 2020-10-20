@@ -3,6 +3,8 @@ import {View, Text, StyleSheet, Switch, Platform} from "react-native";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import headerButton from "../../components/headerButton/headerButton";
 import color from "../../color/color";
+import {useDispatch} from "react-redux";
+import * as action from '../../store/action/index'
 
 function FilterScreen(props) {
     const styles=StyleSheet.create({
@@ -14,15 +16,17 @@ function FilterScreen(props) {
     const [vegan,setVegan]=useState(false)
     const [vegetarian,setVegetarian]=useState(false)
 
+    const dispatch=useDispatch()
+
     const saveHandler=useCallback(()=>{
         const saved={
-            gluten:gluten,
-            lactose:lactose,
-            vegan:vegan,
-            vegetarian:vegetarian
+            isGlutenFree:gluten,
+            isLactoseFree:lactose,
+            isVegan:vegan,
+            isVegetarian:vegetarian
         }
-        console.log(saved)
-    },[gluten,lactose,vegan,vegetarian])
+        dispatch(action.filter(saved))
+    },[gluten,lactose,vegan,vegetarian,dispatch])
 
     useEffect(()=>{
         props.navigation.setParams({save:saveHandler})

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {View, Text, StyleSheet, Image, ScrollView} from "react-native";
-import {MEALS} from "../../data/dummyData";
 import {HeaderButtons,Item} from 'react-navigation-header-buttons'
 import headerButton from "../../components/headerButton/headerButton";
+import {useDispatch, useSelector} from "react-redux";
+import * as action from "../../store/action";
 
 function MealDetailScreen(props) {
     const styles=StyleSheet.create({
@@ -22,10 +23,35 @@ function MealDetailScreen(props) {
         }
     })
 
+    const availableMeal=useSelector((state)=>{
+        return state.meals.meals
+    })
+
+    const favouriteMeal=useSelector((state)=>{
+        return state.meals.favouriteMeals
+    })
+
     const mealId=props.navigation.getParam('mealId')
-    const selection=MEALS.find((meal)=>{
+    const selection=availableMeal.find((meal)=>{
         return meal.id===mealId
     })
+
+    const isFav=favouriteMeal.some((meal)=>{
+        return meal.id===mealId
+    })
+
+    const dispatch=useDispatch()
+    const toggleFavourite=useCallback(()=>{
+        dispatch(action.toggleFavourite(mealId))
+    },[dispatch,mealId])
+
+    useEffect(()=>{
+        props.navigation.setParams({toggleFav: toggleFavourite})
+    },[toggleFavourite])
+
+    useEffect(()=>{
+        props.navigation.setParams({isFav:isFav})
+    },[isFav])
 
     return (
         <ScrollView>
@@ -50,8 +76,8 @@ function MealDetailScreen(props) {
             </View>
             <View>
                 {selection.ingredients.map((ingredient)=>{
-                    return <View style={styles.listContainer}>
-                        <Text key={ingredient} style={{fontFamily:'open-sans'}}>
+                    return <View style={styles.listContainer} key={ingredient}>
+                        <Text style={{fontFamily:'open-sans'}}>
                             {ingredient}
                         </Text>
                     </View>
@@ -64,8 +90,8 @@ function MealDetailScreen(props) {
             </View>
             <View>
                 {selection.step.map((step)=>{
-                    return <View style={styles.listContainer}>
-                        <Text key={step} style={{fontFamily:'open-sans'}}>
+                    return <View style={styles.listContainer} key={step}>
+                        <Text style={{fontFamily:'open-sans'}}>
                             {step}
                         </Text>
                     </View>
@@ -76,15 +102,15 @@ function MealDetailScreen(props) {
 }
 
 MealDetailScreen.navigationOptions=(navigationData)=>{
-    const mealId=navigationData.navigation.getParam('mealId')
-    const selection=MEALS.find((meal)=>{
-        return meal.id===mealId
-    })
+    const mealTitle=navigationData.navigation.getParam('mealTitle')
+    const toggleFavourite=navigationData.navigation.getParam('toggleFav')
+    const isFav=navigationData.navigation.getParam('isFav')
+
     return {
-        title:selection.title,
+        title:mealTitle,
         headerRight:()=>{
             return <HeaderButtons HeaderButtonComponent={headerButton}>
-            <Item title={'starIcon'} iconName={'ios-star'} iconSize={23} style={{color:'white'}}/>
+            <Item title={'starIcon'} iconName={isFav?'ios-star':'ios-star-outline'} iconSize={23} style={{color:'white'}} onPress={toggleFavourite}/>
         </HeaderButtons>}
     }
 }

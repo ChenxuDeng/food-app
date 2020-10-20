@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet, FlatList, Text, ImageBackground, TouchableOpacity} from "react-native";
 import {CATEGORIES} from "../../data/dummyData";
 import {MEALS} from "../../data/dummyData";
+import {useSelector} from "react-redux";
 
 function CategoryMealsScreen(props) {
     const styles=StyleSheet.create({
@@ -44,10 +45,26 @@ function CategoryMealsScreen(props) {
         }
     })
 
+    const availableMeal=useSelector((state)=>{
+        return state.meals.filteredMeals
+    })
+
+    const favouriteMeal=useSelector((state)=>{
+        return state.meals.favouriteMeals
+    })
+
     const catId=props.navigation.getParam('categoryId')
-    const displayedMeal=MEALS.filter((meal)=>{
+    const displayedMeal=availableMeal.filter((meal)=>{
         return meal.categoryId.indexOf(catId)>=0
     })
+
+    if(displayedMeal.length===0){
+        return <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+            <Text style={{fontFamily:'open-sans'}}>
+                Please check your filter setting.
+            </Text>
+        </View>
+    }
 
     return (
         <View style={styles.screen}>
@@ -58,7 +75,11 @@ function CategoryMealsScreen(props) {
                               props.navigation.navigate({
                                   routeName:'MealDetail',
                                   params:{
-                                      mealId:itemData.item.id
+                                      mealId:itemData.item.id,
+                                      mealTitle:itemData.item.title,
+                                      isFav:favouriteMeal.some((meal)=>{
+                                          return meal.id===itemData.item.id
+                                      })
                                   }
                               })
                           }}>

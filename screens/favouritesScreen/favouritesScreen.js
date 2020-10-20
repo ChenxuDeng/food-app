@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground} from "react-native";
-import {MEALS} from "../../data/dummyData";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import headerButton from "../../components/headerButton/headerButton";
+import {useSelector} from "react-redux";
 
 function FavouritesScreen(props) {
     const styles=StyleSheet.create({
@@ -45,20 +45,29 @@ function FavouritesScreen(props) {
         }
     })
 
-    const displayedMeal=MEALS.filter((meal)=>{
-        return meal.id==='m1' || meal.id==='m2'
+    const availableMeal=useSelector((state)=>{
+        return state.meals.favouriteMeals
     })
+
+    if(!availableMeal || availableMeal.length===0){
+        return <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+            <Text style={{fontFamily:'open-sans'}}>
+                No favourite food yet,start adding some!
+            </Text>
+        </View>
+    }
 
     return (
         <View style={styles.screen}>
-            <FlatList data={displayedMeal}
+            <FlatList data={availableMeal}
                       style={{width:'100%'}}
                       renderItem={(itemData)=>{
                           return <TouchableOpacity onPress={()=>{
                               props.navigation.navigate({
                                   routeName:'MealDetail',
                                   params:{
-                                      mealId:itemData.item.id
+                                      mealId:itemData.item.id,
+                                      mealTitle:itemData.item.title
                                   }
                               })
                           }}>
@@ -92,6 +101,7 @@ function FavouritesScreen(props) {
 }
 
 FavouritesScreen.navigationOptions=(navigationData)=>{
+    const mealTitle=navigationData.navigation.getParam('mealTitle')
     return{
         headerLeft:()=>{
             return <HeaderButtons HeaderButtonComponent={headerButton}>
@@ -104,7 +114,8 @@ FavouritesScreen.navigationOptions=(navigationData)=>{
         headerTintColor:'white',
         headerTitleStyle:{
             fontFamily:'open-sans-bold'
-        }
+        },
+        title:mealTitle
     }
 }
 

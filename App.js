@@ -4,8 +4,17 @@ import * as Font from 'expo-font'
 import AppLoading from "expo/build/launch/AppLoading";
 import MealNavigation from "./components/navigation/mealNavigation/mealNavigation";
 import {enableScreens} from "react-native-screens";
+import {createStore,combineReducers} from "redux";
+import {Provider} from "react-redux";
+import meals from "./store/reducer/meals";
 
 enableScreens()
+
+const rootReducer=combineReducers({
+    meals:meals
+})
+
+const store=createStore(rootReducer)
 
 const fetchFont=()=>{
   return Font.loadAsync({
@@ -22,7 +31,9 @@ export default function App() {
   }
 
   return (
-    <MealNavigation/>
+      <Provider store={store}>
+        <MealNavigation/>
+      </Provider>
   );
 }
 
